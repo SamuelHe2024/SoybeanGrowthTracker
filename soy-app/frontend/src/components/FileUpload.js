@@ -1,5 +1,7 @@
 import axios from 'axios'
 import React, {Component} from 'react'
+import {Button} from 'react-bootstrap'
+import Form from 'react-bootstrap/Form'
 
 class FileUpload extends Component {
     state = {
@@ -49,15 +51,19 @@ class FileUpload extends Component {
 
     render() {
         return (
-            <div>
-                <div>
-                    <input type="file" onChange={this.onFileChange} />
-                    <button onClick = {this.onFileUpload}>
+            <Form>
+                <Form.Group controlId="formFile">
+                    <Form.Control type="file" onChange={this.onFileChange} />
+                    <Button 
+                        className = "text-capitalize"
+                        onClick = {this.onFileUpload}>
                         Upload
-                    </button>
-                </div>
-                {this.fileData()}
-            </div>
+                    </Button>
+                    <Form.Label>
+                        {this.fileData()}
+                    </Form.Label>
+                </Form.Group>
+            </Form>
         );
     }
 }
