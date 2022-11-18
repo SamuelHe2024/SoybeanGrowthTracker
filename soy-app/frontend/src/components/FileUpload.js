@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import 'bootstrap/dist/css/bootstrap.css';
 
+
 class FileUpload extends Component {
 
     constructor(props) {
@@ -17,7 +18,8 @@ class FileUpload extends Component {
         imageUrl: '',     //URL of the image
         fileUrl: '',      //URL of the file
         file:null,        //file values
-        result: ""        //output of the prediction
+        result: "",      //output of the prediction
+        showAlert: false
         };
       }
 
@@ -26,12 +28,9 @@ class FileUpload extends Component {
         const data = new FormData();
         data.append('file', file);
         this.setState({isLoading: true});
-        console.log(file)
-        console.log(data)
-
         // THIS SEGMENT IS THE API CALL THAT NEEDS TO BE MODIFIED
         //
-        // fetch('http://127.0.0.1:5000/prediction/', 
+        // fetch('https://pc8esekc49.execute-api.us-east-1.amazonaws.com/test/classifyimage',
         //     {
         //         method: 'POST',
         //         body: data
@@ -46,19 +45,25 @@ class FileUpload extends Component {
         //     });
     }
 
+    getExtension(filename) {
+        return filename.split('.').pop()
+    }
+      
     handleChange = (event) => {
         const value = event.target.value;
-        const name = event.target.name;
-        console.log(event.target.files[0])
-        console.log(value + " AND " + name);
-        var hasImage = this.state.hasImage;
-        hasImage = value !== '';
-        this.setState({
-            hasImage,
-            fileUrl: URL.createObjectURL(event.target.files[0]),
-            file:event.target.files[0],
-        })
-        
+        var extension = this.getExtension(value);
+        if(extension === 'jpg'){
+            var hasImage = this.state.hasImage;
+            hasImage = value !== '';
+            this.setState({
+                hasImage,
+                imageUrl: event.target.value,
+                fileUrl: URL.createObjectURL(event.target.files[0]),
+                file:event.target.files[0],
+            })
+        } else{
+            this.setState({showAlert: true})
+        }
     }
 
     render(){
@@ -77,6 +82,7 @@ class FileUpload extends Component {
                                 >
                             </Form.Control>
                         </Form.Group>
+                        
                         <Row>
                             <Col>
                                 <Button
@@ -87,6 +93,12 @@ class FileUpload extends Component {
                             </Col>
                         </Row>
                     </Form>
+                </div>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>[ERROR]</strong> The model only accepts .jpg file extensions
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
             </Container>
         );
