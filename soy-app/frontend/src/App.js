@@ -10,7 +10,7 @@ function App() {
     <div className="App">
       <Navbar expand = "lg" bg = "success">
         <Container fluid>
-          <Navbar.Brand className = "text-light">Soybean Predictor</Navbar.Brand>
+          <Navbar.Brand className = "text-light"> Soybean Predictor </Navbar.Brand>
         </Container>
       </Navbar>
       <Description/>
