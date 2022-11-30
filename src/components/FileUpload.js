@@ -70,7 +70,7 @@ class FileUpload extends Component {
                 <div className="content">
                     <Form>
                         <Form.Group controlId = "formGroup">
-                            <Form.Label>Upload Image:</Form.Label>
+                            <Form.Label>Upload Image (.jpg only):</Form.Label>
                             <Form.Control 
                                 type="file"
                                 name="image"
