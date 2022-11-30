@@ -25,24 +25,21 @@ class FileUpload extends Component {
 
     handlePredictClick = (event) => {
         const file = this.state.file;
-        const data = new FormData();
-        data.append('file', file);
+        console.log(file)
+        var formdata = new FormData();
+        formdata.append("image", file);
         this.setState({isLoading: true});
-        // THIS SEGMENT IS THE API CALL THAT NEEDS TO BE MODIFIED
-        //
-        // fetch('https://pc8esekc49.execute-api.us-east-1.amazonaws.com/test/classifyimage',
-        //     {
-        //         method: 'POST',
-        //         body: data
-        //     })
-        //     .then(response => response.json())
-        //     .then(response => {
-        //         console.log(response)
-        //         this.setState({
-        //         result: response.result,
-        //         isLoading: false
-        //         });
-        //     });
+
+        var requestOptions = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        fetch("https://soy-api2.herokuapp.com/predict", requestOptions)
+        .then(response => response.text())
+        .then(res => this.setState({isLoading: false, result: res}))
+        .catch(error => console.log('error', error));
     }
 
     getExtension(filename) {
@@ -94,12 +91,7 @@ class FileUpload extends Component {
                         </Row>
                     </Form>
                 </div>
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>[ERROR]</strong> The model only accepts .jpg file extensions
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                <p>{this.state.result}</p>
             </Container>
         );
     }
