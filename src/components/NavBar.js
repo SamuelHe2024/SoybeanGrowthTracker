@@ -8,16 +8,16 @@ class NavBar extends Component{
         return (
             <Navbar expand="lg" className = "color-nav" variant = "dark">
                 <Container fluid>
-                    <Navbar.Brand href="/">
+                    <Navbar.Brand>
                         <img src = {Beanify} alt="Beanify"/>
                     </Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-Navbar-nav"/>
+                    {/* <Navbar.Toggle aria-controls="basic-Navbar-nav"/>
                     <Navbar.Collapse id="basic-Navbar-nav">
-                        {/* <Nav className="ms-auto">
+                        <Nav className="ms-auto">
                             <Nav.Link href = "/project">Project Info</Nav.Link>
                             <Nav.Link href = "/team">Team Info</Nav.Link>
-                        </Nav> */}
-                    </Navbar.Collapse>
+                        </Nav> 
+                    </Navbar.Collapse>*/}
                 </Container>
             </Navbar>
         )
