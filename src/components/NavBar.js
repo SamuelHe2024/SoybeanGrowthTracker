@@ -13,10 +13,10 @@ class NavBar extends Component{
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-Navbar-nav"/>
                     <Navbar.Collapse id="basic-Navbar-nav">
-                        <Nav className="ms-auto">
+                        {/* <Nav className="ms-auto">
                             <Nav.Link href = "/project">Project Info</Nav.Link>
                             <Nav.Link href = "/team">Team Info</Nav.Link>
-                        </Nav>
+                        </Nav> */}
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
