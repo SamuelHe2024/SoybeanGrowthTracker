@@ -24,6 +24,7 @@ class FileUpload extends Component {
         };
       }
     
+    handle
 
     handlePredictClick = (event) => {
         if(this.state.file){
@@ -37,7 +38,7 @@ class FileUpload extends Component {
                 body: formdata,
                 redirect: 'follow'
             };
-
+            // fetch("")
             fetch("https://soy-api2.herokuapp.com/predict", requestOptions)
             .then(response => response.text())
             .then(res => {this.setState({isLoading: false, result: JSON.parse(res)});
