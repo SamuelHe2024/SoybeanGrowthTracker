@@ -23,9 +23,6 @@ class FileUpload extends Component {
         showAlert: false
         };
       }
-    
-    handle
-
     handlePredictClick = (event) => {
         if(this.state.file){
             const file = this.state.file;

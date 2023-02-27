@@ -9,7 +9,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 
 const SolutionData = () =>{
     const [rowData] = useState([
-        {solution: "d", concentration: 200, calcium: 0.2}
+        {solution: "test", concentration: 200, calcium: 0.2}
     ])
 
     const [columnDefs] = useState([
@@ -22,7 +22,8 @@ const SolutionData = () =>{
         <div className='ag-theme-alpine-dark' style={{height: '100vh'}}>
             <AgGridReact
                 rowData={rowData}
-                columnDefs={columnDefs}>
+                columnDefs={columnDefs}
+                pagination={true}>
             </AgGridReact>
         </div>
     );

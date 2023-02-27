@@ -1,25 +1,40 @@
 //REACT COMPONENT FOR DRY WEIGHT DATA TABLE
-import {React, useState} from 'react'
+import {React, useState, useMemo, useCallback, useEffect} from 'react'
 
 import { AgGridReact } from 'ag-grid-react'
 
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 const DryWeight =()=>{
-    const [rowData] = useState([
-        {solution: "d", 'dry weight': 200}
-    ])
+    const [rowData, setRowData] = useState()
 
-    const [columnDefs] = useState([
+    const [columnDefs, setColumnDefs] = useState([
+        {field: 'id'},
         {field: 'solution'},
         {field: 'dry weight'}
     ])
+
+    const defaultColDef = useMemo(()=> ({
+        sortable:true
+    }))
+
+    // Example of consuming Grid Event
+    const cellClickedListener = useCallback( event => {
+        console.log('cellClicked', event);
+    }, []);
+
+    useEffect(() => {
+        fetch('http://localhost:5000/db/dry_weight')
+        .then(result => result.json())
+        .then(rowData => setRowData(rowData['row_data']))
+      }, []);
 
     return(
         <div className='ag-theme-alpine-dark' style={{height: '100vh'}}>
             <AgGridReact
                 rowData={rowData}
-                columnDefs={columnDefs}>
+                columnDefs={columnDefs}
+                pagination={true}>
             </AgGridReact>
         </div>
     );

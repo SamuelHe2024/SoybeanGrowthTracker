@@ -12,6 +12,11 @@ class NavBar extends Component{
                         .dropbtn {
                             background: black;
                             color: grey;
+                            position: absolute;
+                            top: 50%;
+                            -ms-transform: translateY(-50%);
+                            transform: translateY(-50%);
+                            margin-right:100;
                         }
                         .dropdown-content{
                             display: none;
@@ -34,7 +39,6 @@ class NavBar extends Component{
                                 <span class="dropdown">
                                     <button class = "dropbtn">Data
                                     </button>
-                                    
                                     <div class="dropdown-content">
                                         <Nav.Link href = "/dry_weight">Dry Weight Data</Nav.Link>
                                         <Nav.Link href = "/solution_data">Solution Data</Nav.Link>
