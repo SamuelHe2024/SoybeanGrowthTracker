@@ -3,13 +3,10 @@
 }
 .color-nav{
     background-color:#000000;
-    border-bottom: 3px solid #596e5c;
+    border-bottom: 3px solid #3e399e;
 }
 .upload{
     margin-bottom: 10px;
-}
-h1{
-    font-size:100pt
 }
 h3{
     left: 25vw
@@ -21,32 +18,8 @@ h3{
 .App{
     background-color: black;
     color: rgba(255, 255, 255, 0.797);
-    height: 195vh;
-    font-family: myFirstFont;
-}
-.home-text{
-    position: relative; 
     height: 100vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-/* .content{
-    background-color:#252525
-} */
-.col1{
-    background-color:#252525;
-    outline-color: #CBDDD1;
-    outline-style: solid;
-    border-radius: 50px;
-    position: relative; 
-    height: 50vh;
-    width: 100%;
-    right: 5vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-family: myFirstFont;
 }
 .home-text::before{
     content: "";
@@ -60,18 +33,11 @@ h3{
     opacity: 0.25;
 }
 .home-text-2{
-    height:100vh;
+    height:55vh;
     margin: 0;
     position: absolute;
-    top: 35vh;
+    top: 45vh;
     left: 5vw;
-}
-.function{
-    height:50vh;
-    margin: 0;
-    position: absolute;
-    width: 100%;
-    top: 120vh;
 }
 .description{
     background-color:black;
@@ -81,28 +47,9 @@ h3{
     position:fixed;
     bottom: 0%;
 }
-.col2{
-    position: relative;
-    height: 50vh;
-}
-@keyframes spinner {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  .loading-spinner {
+.gettingStarted{
+    margin: 0;
     position: absolute;
-    width: 50px;
-    height: 50px;
-    border: 10px solid #f3f3f3; /* Light grey */
-    border-top: 10px solid #383636; /* Black */
-    border-radius: 50%;
-    animation: spinner 1.5s linear infinite;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0
-  }
+    top: 45vh;
+    left: 5vw;
+}

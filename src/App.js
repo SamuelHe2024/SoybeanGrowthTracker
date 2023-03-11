@@ -1,11 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from 'react'
 import PredictionPage from "./components/pages/PredictionPage";
-import DryWeight from "./components/pages/DryWeight"
-import SolutionData from "./components/pages/SolutionData"
-import Navbar from './components/NavBar';
+import Navbar from './components/utils/NavBar';
 import './App.css'
-import WaterUptake from "./components/pages/WaterUptake";
+import InsertData from "./components/pages/InsertData";
+import ViewData from "./components/pages/ViewData";
 
 function App() {
   return (
@@ -14,9 +13,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<PredictionPage/>}/>
-          <Route path="/dry_weight" element={<DryWeight/>}/>
-          <Route path="/solution_data" element={<SolutionData/>}/>
-          <Route path="/water_uptake" element={<WaterUptake/>}/>
+          <Route path="/view_data" element={<ViewData/>}/>
+          <Route path="/insert_data" element={<InsertData/>}/>
         </Routes>
       </BrowserRouter>
     </>

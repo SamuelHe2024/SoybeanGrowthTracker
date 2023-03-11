@@ -1,17 +1,17 @@
-//REACT COMPONENT FOR DRY WEIGHT DATA TABLE
+//REACT COMPONENT THAT INCLUDES DATA TABLE FOR WATER UPTAKE//REACT COMPONENT THAT INCLUDES IMAGES AND THEIR PREDICTED DAY OF GROWTH
 import {React, useState, useMemo, useCallback, useEffect} from 'react'
-
 import { AgGridReact } from 'ag-grid-react'
 
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
-const DryWeight =()=>{
+const WaterUptake = () =>{
     const [rowData, setRowData] = useState()
 
     const [columnDefs, setColumnDefs] = useState([
         {field: 'id'},
         {field: 'solution'},
-        {field: 'dry weight'}
+        {field: 'uptake amount'},
+        {field: 'uptake date'}
     ])
 
     const defaultColDef = useMemo(()=> ({
@@ -24,13 +24,13 @@ const DryWeight =()=>{
     }, []);
 
     useEffect(() => {
-        fetch('http://localhost:5000/db/dry_weight')
+        fetch('https://soy-api2.herokuapp.com/db/water_uptake')
         .then(result => result.json())
         .then(rowData => setRowData(rowData['row_data']))
       }, []);
 
     return(
-        <div className='ag-theme-alpine-dark' style={{height: '100vh'}}>
+        <div className='ag-theme-alpine' style={{height: '100vh'}}>
             <AgGridReact
                 rowData={rowData}
                 columnDefs={columnDefs}
@@ -39,4 +39,4 @@ const DryWeight =()=>{
         </div>
     );
 }
-export default DryWeight;
+export default WaterUptake;
