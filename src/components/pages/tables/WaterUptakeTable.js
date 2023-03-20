@@ -4,7 +4,7 @@ import { AgGridReact } from 'ag-grid-react'
 
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
-const WaterUptake = () =>{
+const WaterUptakeTable = () =>{
     const [rowData, setRowData] = useState()
 
     const [columnDefs, setColumnDefs] = useState([
@@ -39,4 +39,4 @@ const WaterUptake = () =>{
         </div>
     );
 }
-export default WaterUptake;
+export default WaterUptakeTable;

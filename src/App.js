@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from 'react'
-import PredictionPage from "./components/pages/PredictionPage";
+import HomePage from "./components/pages/HomePage";
 import Navbar from './components/utils/NavBar';
 import './App.css'
 import InsertData from "./components/pages/InsertData";
@@ -12,7 +12,7 @@ function App() {
       <Navbar/>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<PredictionPage/>}/>
+          <Route path="/" element={<HomePage/>}/>
           <Route path="/view_data" element={<ViewData/>}/>
           <Route path="/insert_data" element={<InsertData/>}/>
         </Routes>

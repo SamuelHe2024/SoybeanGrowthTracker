@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import 'bootstrap/dist/css/bootstrap.css';
 
 
-const PredictionPage = () => {
+const HomePage = () => {
     return(
             <>
                 <div className="App">
@@ -24,4 +24,4 @@ const PredictionPage = () => {
         );
     
 };
-export default PredictionPage;
+export default HomePage;

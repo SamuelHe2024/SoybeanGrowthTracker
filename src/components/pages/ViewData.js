@@ -4,9 +4,10 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import DryWeight from './tables/DryWeight';
-import SolutionData from './tables/SolutionData';
-import WaterUptake from './tables/WaterUptake';
+import SolutionTable from './tables/SolutionTable';
+import WaterUptakeTable from './tables/WaterUptakeTable';
+import DryWeightTable from './tables/DryWeightTable';
+import ImageTable from './tables/ImageTable';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -51,19 +52,23 @@ export default function ViewData(){
         <>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                <Tab label="Dry Weight" {...a11yProps(0)} />
-                <Tab label="Solution" {...a11yProps(1)} />
-                <Tab label="Water Uptake" {...a11yProps(2)} />
+                <Tab label="Predictions" {...a11yProps(0)} />
+                <Tab label="Dry Weight" {...a11yProps(1)} />
+                <Tab label="Solution" {...a11yProps(2)} />
+                <Tab label="Water Uptake" {...a11yProps(3)} />
             </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-                <DryWeight/>
+                <ImageTable/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <SolutionData/>
+                <DryWeightTable/>
             </TabPanel>
             <TabPanel value={value} index={2}>
-                <WaterUptake/>
+                <SolutionTable/>
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+                <WaterUptakeTable/>
             </TabPanel>
         </>
     )

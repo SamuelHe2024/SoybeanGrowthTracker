@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import DryWeightForm from './forms/DryWeightForm';
 import WaterUptakeForm from './forms/WaterUptakeForm';
 import SolutionForm from './forms/SolutionForm';
-import ImageForm from './forms/ImageForm';
+import FileUpload from '../utils/FileUpload';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -68,7 +68,7 @@ export default function InsertData(){
               <WaterUptakeForm/>
             </TabPanel>
             <TabPanel value={value} index={0}>
-              <ImageForm/>
+              <FileUpload/>
             </TabPanel>
         </>
     )

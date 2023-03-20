@@ -6,13 +6,12 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 
-const SolutionData = () =>{
+const SolutionTable = () =>{
     const [rowData, setRowData] = useState()
 
     const [columnDefs, setColumnDefs] = useState([
         {field: 'id'},
         {field: 'solution'},
-        {field: 'concentration'},
         {field: 'calcium'},
         {field: 'magnesium'},
         {field: 'sodium'},
@@ -41,7 +40,7 @@ const SolutionData = () =>{
         {field: 'cb'}
     ])
     useEffect(() => {
-        fetch('https://soy-api2.herokuapp.com/db/solution_data')
+        fetch('http://localhost:5000/db/solution_data')
         .then(result => result.json())
         .then(rowData => setRowData(rowData['row_data']))
       }, []);
@@ -60,4 +59,4 @@ const SolutionData = () =>{
         </div>
     );
 }
-export default SolutionData;
+export default SolutionTable;
