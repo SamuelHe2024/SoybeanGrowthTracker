@@ -6,7 +6,7 @@ var fields = [
     'Magnesium',
     'Sodium',
     'Potassium',
-    'Noron',
+    'Boron',
     'CO_3',
     'HCO_3',
     'SO_4',
@@ -30,6 +30,8 @@ var fields = [
     'Cb'
 ]
 
+
+
 var solutions = ["Control", 
                  "Plasma Treated Water", 
                  "Potassium 100ppm",
@@ -45,15 +47,53 @@ var solutions = ["Control",
 
 const SolutionForm = () =>{
 
+    const [parameters, setParameters] = useState({'Calcium' : "",
+    'Magnesium' : "",
+    'Sodium' : "",
+    'Potassium' : "",
+    'Boron' : "",
+    'CO_3' : "",
+    'HCO_3' : "",
+    'SO_4' : "",
+    'Chlorine' : "",
+    'NO3_n' : "",
+    'Phosphorus' : "",
+    'pH' : "",
+    'Conductivity' : "",
+    'SAR' : "",
+    'Iron' : "",
+    'Zinc' : "",
+    'Copper' : "",
+    'Manganese' : "",
+    'Arsenic' : "",
+    'Barium' : "",
+    'Nickel' : "",
+    'Cadmium' : "",
+    'Lead' : "",
+    'Chromium' : "",
+    'Fluorine' : "",
+    'Cb' : ""})
+
     const [solution, setSolution] = useState("")
 
     const handleSolutionEvent = event => {
         setSolution(event.target.value)
     }
+    const handleParameterEvent = event => {
+        const {name, value} = event.target
+        setParameters(prevState => ({...prevState, [name] : value}))
+    }
 
     const handleSubmit = () => {
-        console.log("button!")
-        
+        const data = new FormData();
+        data.append("solution", solution)
+        for(let parameter in parameters){
+            data.append(parameter, parameters[parameter])
+        }
+        fetch("http://localhost:5000/db/solution_data", {
+                    method: "POST", 
+                    body: data
+                }).then(res => console.log(res))
     }
 
     return(
@@ -66,7 +106,10 @@ const SolutionForm = () =>{
                         </Select>
                 </FormControl>
             </Grid>
-            {fields.map(el => <FormControl > <InputLabel htmlFor="my-input" >{el}</InputLabel> <Input id="my-input" sx={{ m: 1, maxWidth: 150 }} aria-describedby="my-helper-text" /></FormControl>
+            {fields.map(el => <FormControl > 
+                                <InputLabel htmlFor="my-input" >{el}</InputLabel> 
+                                <Input name = {el} sx={{ m: 1, maxWidth: 150 }} onChange = {handleParameterEvent} aria-describedby="my-helper-text" />
+                              </FormControl>
             )}
             <Grid>
                 <Button variant = "contained" sx={{ m: 1, minWidth: 150 }} onClick = {handleSubmit}>Submit</Button>
