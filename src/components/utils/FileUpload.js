@@ -1,22 +1,24 @@
 import React, {useState} from 'react'
 import '../../App.css'
+import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import { Button, ListItemText, Typography, Grid} from '@mui/material'
+import { Button, ListItemText, Typography, Grid, CircularProgress, Box} from '@mui/material'
 
 const MAX_COUNT = 10;
 function getExtension(filename){
     return filename.split('.').pop();
 }
 const FileUpload = () => {
-
-    const [uploadedFiles, setUploadedFiles] = useState([])
-    const [pictures, setPictures] = useState([])
-    const [hasFile, setHasFile] = useState(uploadedFiles.length > 0)
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [pictures, setPictures] = useState([]);
+    const [hasFile, setHasFile] = useState(uploadedFiles.length > 0);
     const [fileLimit, setFileLimit] = useState(false);
     const [predictions, setPredictions] = useState([]);
     const handleUploadFiles = files => {
-        const uploaded = [...uploadedFiles];
+        const uploaded = [];
         let limitExceeded = false;
         files.some((file) => {
             if (uploaded.findIndex((f)=>f.name === file.name) === -1){
@@ -28,6 +30,7 @@ const FileUpload = () => {
                     limitExceeded = true;
                     return true;
                 }
+                
             }
         })
         if (!limitExceeded) setUploadedFiles(uploaded)
@@ -36,30 +39,37 @@ const FileUpload = () => {
 
     const uploadFiles = () => {
         const data = new FormData();
+        setLoading(true);
         for(const file of uploadedFiles){
             data.append('files[]', file, file.name);
         }
-        fetch('https://soy-api2.herokuapp.com/upload',{
-            method: 'POST',
-            body: data,
-            redirect: 'follow'
-        }).catch(error => console.log('error', error));
+        // fetch('https://soy-api2.herokuapp.com/upload',{
+        //     method: 'POST',
+        //     body: data,
+        //     redirect: 'follow'
+        // }).catch(error => console.log('error', error));
         fetch('http://localhost:5000/predict',{
             method: 'POST',
             body: data,
             redirect: 'follow'
         }).then(response=>response.json())
         .then(response=>{setPredictions(response)})
+        .then(response=>{console.log(response);
+                         setLoading(false)})
         .catch(error => console.log('error', error));
     }
 
     const handleFileEvent = (e) =>{
+        setPredictions([])
+        setPictures([])
         const chosenFiles = Array.prototype.slice.call(e.target.files)
         const pictureArray = []
+        const predictionArray = []
         for(let i = 0; i < chosenFiles.length; i++){
-            console.log(chosenFiles[i])
             pictureArray.push({"name":chosenFiles[i].name,"img":URL.createObjectURL(chosenFiles[i])})
+            predictionArray.push({"id": i,"prediction" : "", "accuracy" : "", "filename" : chosenFiles[i].name})
         }
+        setPredictions(predictionArray)
         setPictures(pictureArray)
         handleUploadFiles(chosenFiles)
     }
@@ -72,27 +82,34 @@ const FileUpload = () => {
         color: theme.palette.text.secondary,
       }));
 
-    const handleClick = () =>{
-        console.log(predictions)
-    }
+    const picturesWithPrediction = pictures.map(picture =>{
+        return {
+            ...picture,
+            "prediction": predictions.find(prediction => prediction.filename == picture.name)
+        }
+    })
 
-    const arrayPredictions = predictions.map(course => 
-        <Grid key={course.id}>
-          <Item></Item>
-          <Item><strong>{course.filename}</strong>: prediction: {course.prediction}</Item>
-          <Item>Confidence: {Math.round(course.accuracy*1000,3)/10}%</Item>
+    const cards = picturesWithPrediction.map(data =>
+        <Grid item>
+            <Item height = "200" width = "200">
+                <img src = {data.img} height = "200px" width = "200px"></img>
+                    <div>
+                    <strong>Image Name: </strong>{data.name}
+                    </div>
+                    <div>
+                        <strong>Day Range: </strong> {data.prediction.prediction}<br/>
+                        <strong>Confidence: </strong> {Math.round(data.prediction.accuracy*1000,3)/10}%
+                    </div>
+                </Item>
         </Grid>
     )
 
     return(
         <div>
-            <Grid className='uploaded-files-list' container spacing={2}>
-                {pictures.map(function(file,i){
-                    return <Grid item><Item key={i}><img src = {file.img} width = "300"></img>{file.name}</Item></Grid>
-                })}
+            <Grid sx={{ m: 1, position: 'relative' }} className='uploaded-files-list' container spacing={2}>
+                <Grid>{cards}</Grid>
             </Grid>
-            <Grid>{arrayPredictions}</Grid>
-            <Button variant = "contained" component = "label" disabled = {fileLimit}>
+            <Button sx={{ m: 1, position: 'relative' }} variant = "contained" component = "label" disabled = {fileLimit}>
                 Select Files
                 <input id='fileUpload' type='file' multiple
                 hidden
@@ -101,19 +118,21 @@ const FileUpload = () => {
             />
             </Button>
             <br></br>
-            
-            <Button variant = "contained" color = "success" disabled = {!hasFile} onClick = {uploadFiles}>
-                Predict
-            </Button>
-            
-            
-
-            {/* <Grid container spacing={2}>
-                <Button onClick = {handleClick}>
-                    bazinga
+            <Box sx={{ m: 1, position: 'relative' }}>
+                <Button variant = "contained" color = "success" disabled = {!hasFile || loading} onClick = {uploadFiles}>
+                    Predict
                 </Button>
-            </Grid> */}
-
+                {loading && (<CircularProgress
+                    size = {24}
+                    sx={{
+                        color: green[500],
+                        position: 'absolute',
+                        top: '50%',
+                        marginTop: '-12px',
+                        marginLeft: '-60px',
+                      }}
+                />)}
+            </Box>
         </div>
     );
 }
