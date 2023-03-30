@@ -3,20 +3,24 @@ import '../../App.css'
 import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import { Button, ListItemText, Typography, Grid, CircularProgress, Box} from '@mui/material'
+import { Button, Grid, CircularProgress, Box, Alert} from '@mui/material'
 
 const MAX_COUNT = 10;
 function getExtension(filename){
     return filename.split('.').pop();
 }
 const FileUpload = () => {
-    const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [limitExceeded, setLimitExceeded] = useState(false);
+    const [invalidFiles, setInvalidFiles] = useState([]);
+    const [hasInvalidFiles, setHasInvalidFiles] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [pictures, setPictures] = useState([]);
     const [hasFile, setHasFile] = useState(uploadedFiles.length > 0);
     const [fileLimit, setFileLimit] = useState(false);
     const [predictions, setPredictions] = useState([]);
+
     const handleUploadFiles = files => {
         const uploaded = [];
         let limitExceeded = false;
@@ -30,11 +34,13 @@ const FileUpload = () => {
                     limitExceeded = true;
                     return true;
                 }
-                
             }
         })
-        if (!limitExceeded) setUploadedFiles(uploaded)
-        setHasFile(true)
+        if (!limitExceeded && !hasInvalidFiles){ 
+            setUploadedFiles(uploaded)
+            console.log(uploadedFiles)
+            setHasFile(true)
+        }
     }
 
     const uploadFiles = () => {
@@ -56,22 +62,48 @@ const FileUpload = () => {
         .then(response=>{setPredictions(response)})
         .then(response=>{console.log(response);
                          setLoading(false)})
+        .then(response=>{setSuccess(true)})
         .catch(error => console.log('error', error));
+        setTimeout(() => setSuccess(false), 10000);
     }
 
     const handleFileEvent = (e) =>{
-        setPredictions([])
-        setPictures([])
-        const chosenFiles = Array.prototype.slice.call(e.target.files)
-        const pictureArray = []
-        const predictionArray = []
-        for(let i = 0; i < chosenFiles.length; i++){
-            pictureArray.push({"name":chosenFiles[i].name,"img":URL.createObjectURL(chosenFiles[i])})
-            predictionArray.push({"id": i,"prediction" : "", "accuracy" : "", "filename" : chosenFiles[i].name})
+        setLimitExceeded(false);
+        setHasInvalidFiles(false);
+        setPredictions([]);
+        setHasFile(false);
+        setPictures([]);
+
+        const chosenFiles = Array.prototype.slice.call(e.target.files);
+        const pictureArray = [];
+        const predictionArray = [];
+
+        let hasInvalid = false;
+        let invalid = [];
+
+        if(chosenFiles.length > MAX_COUNT){
+            setLimitExceeded(true);
+            return;
         }
-        setPredictions(predictionArray)
-        setPictures(pictureArray)
-        handleUploadFiles(chosenFiles)
+        for(let i = 0; i < chosenFiles.length; i++){
+                if((getExtension(chosenFiles[i].name) === "png") || (getExtension(chosenFiles[i].name) === "jpg")){
+                    pictureArray.push({"name":chosenFiles[i].name,"img":URL.createObjectURL(chosenFiles[i])})
+                    predictionArray.push({"id": i,"prediction" : "", "accuracy" : "", "filename" : chosenFiles[i].name})
+                }
+                else{
+                    invalid.push(chosenFiles[i].name);
+                    hasInvalid = true;
+                    setHasInvalidFiles(true);
+                }
+            }
+        
+        if(!hasInvalid){
+                setPredictions(predictionArray);
+                setPictures(pictureArray);
+                handleUploadFiles(chosenFiles);
+                return;
+        }
+        setInvalidFiles(invalid);
     }
 
     const Item = styled(Paper)(({ theme }) => ({
@@ -85,7 +117,7 @@ const FileUpload = () => {
     const picturesWithPrediction = pictures.map(picture =>{
         return {
             ...picture,
-            "prediction": predictions.find(prediction => prediction.filename == picture.name)
+            "prediction": predictions.find(prediction => prediction.filename === picture.name)
         }
     })
 
@@ -107,19 +139,18 @@ const FileUpload = () => {
     return(
         <div>
             <Grid sx={{ m: 1, position: 'relative' }} className='uploaded-files-list' container spacing={2}>
-                <Grid>{cards}</Grid>
+                {cards}
             </Grid>
-            <Button sx={{ m: 1, position: 'relative' }} variant = "contained" component = "label" disabled = {fileLimit}>
-                Select Files
-                <input id='fileUpload' type='file' multiple
-                hidden
-                onChange={handleFileEvent}
-                disabled={fileLimit}
-            />
-            </Button>
-            <br></br>
             <Box sx={{ m: 1, position: 'relative' }}>
-                <Button variant = "contained" color = "success" disabled = {!hasFile || loading} onClick = {uploadFiles}>
+                <Button variant = "contained" component = "label" disabled = {fileLimit}>
+                    Select Files
+                    <input id='fileUpload' type='file' multiple
+                    hidden
+                    onChange={handleFileEvent}
+                    disabled={fileLimit}
+                />
+                </Button>
+                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {uploadFiles}>
                     Predict
                 </Button>
                 {loading && (<CircularProgress
@@ -132,6 +163,9 @@ const FileUpload = () => {
                         marginLeft: '-60px',
                       }}
                 />)}
+                {invalidFiles.map(eq => (<Alert key = {eq} severity = "error" hidden = {!hasInvalidFiles}>Invalid File Type for {eq}: Must use .jpg or .png filetype</Alert>))}
+                <Alert severity = "error" hidden = {!limitExceeded} >You cannot upload more than {MAX_COUNT} files!</Alert>
+                <Alert severity = "success" hidden = {!success}>Successfully uploaded!</Alert>
             </Box>
         </div>
     );
