@@ -3,6 +3,7 @@ import '../../App.css'
 import { green } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
+import { maxHeight, maxWidth } from '@mui/system';
 import { Button, Grid, CircularProgress, Box, Alert} from '@mui/material'
 
 const MAX_COUNT = 10;
@@ -49,11 +50,11 @@ const FileUpload = () => {
         for(const file of uploadedFiles){
             data.append('files[]', file, file.name);
         }
-        // fetch('https://soy-api2.herokuapp.com/upload',{
-        //     method: 'POST',
-        //     body: data,
-        //     redirect: 'follow'
-        // }).catch(error => console.log('error', error));
+        fetch('https://soy-api2.herokuapp.com/upload',{
+            method: 'POST',
+            body: data,
+            redirect: 'follow'
+        }).catch(error => console.log('error', error));
         fetch('http://localhost:5000/predict',{
             method: 'POST',
             body: data,
@@ -123,16 +124,19 @@ const FileUpload = () => {
 
     const cards = picturesWithPrediction.map(data =>
         <Grid item>
-            <Item height = "200" width = "200">
-                <img src = {data.img} height = "200px" width = "200px"></img>
+            <Item style = {{ width: 200,  height: 220}}>
+                <div style = {{ width: 200,  height: 150}}>
+                    <img src = {data.img} style = {{ maxHeight: 150,  maxWidth: 150}}></img>
+                </div>
                     <div>
-                    <strong>Image Name: </strong>{data.name}
+                        <strong>Image Name: </strong>{data.name}
                     </div>
                     <div>
                         <strong>Day Range: </strong> {data.prediction.prediction}<br/>
                         <strong>Confidence: </strong> {Math.round(data.prediction.accuracy*1000,3)/10}%
                     </div>
-                </Item>
+                
+            </Item>
         </Grid>
     )
 

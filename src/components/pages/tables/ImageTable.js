@@ -15,20 +15,22 @@ const ImageTable = () => {
         "raw_data":[{"id":null},
                     {"image_name":null},
                     {"day_prediction":null},
-                    {"image_url":null},
-                    {"segmented_image_url":null},
                     {"solution":null},
                     {"accuracy":null}]
     })
     const [columnDefs, setColumnDefs] = useState([
-        {field: 'id'},
-        {field: 'image_name'},
+        {field: 'image_name', maxWidth: 150},
         {field: 'day_prediction'},
-        {field: 'image_url'},
-        {field: 'segmented_image_url'},
         {field: 'solution'},
         {field: 'accuracy'}
     ])
+
+    const gridOptions = {
+        defaultColDef: {
+            resizable: true,
+            maxWidth: 200
+        }
+    }
 
     const handleOpen = () => {
         setModalOpen(true);
@@ -60,6 +62,7 @@ const ImageTable = () => {
         <>
             <div className='ag-theme-alpine' style={{height: '100vh'}}>
                 <AgGridReact
+                    gridOptions={gridOptions}
                     rowData={rowData}
                     columnDefs={columnDefs}
                     pagination={true}

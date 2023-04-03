@@ -10,7 +10,6 @@ const SolutionTable = () =>{
     const [rowData, setRowData] = useState()
 
     const [columnDefs, setColumnDefs] = useState([
-        {field: 'id'},
         {field: 'solution'},
         {field: 'calcium'},
         {field: 'magnesium'},
@@ -45,16 +44,20 @@ const SolutionTable = () =>{
         .then(rowData => setRowData(rowData['row_data']))
       }, []);
 
-    const defaultColDef = useMemo(()=> ({
-        sortable:true
-    }))
+    const gridOptions = {
+        defaultColDef: {
+            resizable: true,
+        }
+    }
 
     return(
         <div className='ag-theme-alpine' style={{height: '100vh'}}>
             <AgGridReact
+                gridOptions={gridOptions}
                 rowData={rowData}
                 columnDefs={columnDefs}
-                pagination={true}>
+                pagination={true}
+                >
             </AgGridReact>
         </div>
     );
