@@ -21,6 +21,7 @@ const FileUpload = () => {
     const [hasFile, setHasFile] = useState(uploadedFiles.length > 0);
     const [fileLimit, setFileLimit] = useState(false);
     const [predictions, setPredictions] = useState([]);
+    const [requestFailed, setRequestFailed] = useState(false);
 
     const handleUploadFiles = files => {
         const uploaded = [];
@@ -55,7 +56,7 @@ const FileUpload = () => {
             body: data,
             redirect: 'follow'
         }).catch(error => console.log('error', error));
-        fetch('http://localhost:5000/predict',{
+        fetch('https://soy-api2.herokuapp.com/predict',{
             method: 'POST',
             body: data,
             redirect: 'follow'
@@ -64,12 +65,15 @@ const FileUpload = () => {
         .then(response=>{console.log(response);
                          setLoading(false)})
         .then(response=>{setSuccess(true)})
-        .catch(error => console.log('error', error));
+        .catch(error => {console.log('error', error)
+                         setTimeout(() => setRequestFailed(true), 1000) 
+                        });
         setTimeout(() => setSuccess(false), 10000);
     }
 
     const handleFileEvent = (e) =>{
         setLimitExceeded(false);
+        setInvalidFiles([])
         setHasInvalidFiles(false);
         setPredictions([]);
         setHasFile(false);
@@ -169,6 +173,7 @@ const FileUpload = () => {
                 />)}
                 {invalidFiles.map(eq => (<Alert key = {eq} severity = "error" hidden = {!hasInvalidFiles}>Invalid File Type for {eq}: Must use .jpg or .png filetype</Alert>))}
                 <Alert severity = "error" hidden = {!limitExceeded} >You cannot upload more than {MAX_COUNT} files!</Alert>
+                <Alert severity = "error" hidden = {!requestFailed} >[INTERNAL ERROR] Request failed to connect to server</Alert>
                 <Alert severity = "success" hidden = {!success}>Successfully uploaded!</Alert>
             </Box>
         </div>

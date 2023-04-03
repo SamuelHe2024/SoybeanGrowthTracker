@@ -48,7 +48,6 @@ const ImageTable = () => {
     }, []);
 
     useEffect(() => {
-        // fetch('http://localhost:5000/db/image_data')
         fetch('https://soy-api2.herokuapp.com/db/image_data')
         .then(result => result.json())
         .then(rowData => setRowData(rowData['row_data']))
