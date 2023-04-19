@@ -46,7 +46,9 @@ var solutions = ["Control",
                 ]
 
 const SolutionForm = () =>{
-
+    const addFields = () => {
+        
+    }
     const [parameters, setParameters] = useState({'Calcium' : "",
     'Magnesium' : "",
     'Sodium' : "",

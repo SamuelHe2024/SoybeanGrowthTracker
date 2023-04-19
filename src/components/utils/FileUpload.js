@@ -48,15 +48,17 @@ const FileUpload = () => {
     const uploadFiles = () => {
         const data = new FormData();
         setLoading(true);
-        for(const file of uploadedFiles){
-            data.append('files[]', file, file.name);
-        }
+        data.append('image', uploadedFiles[0])
+        console.log(uploadedFiles[0])
+        // for(const file of uploadedFiles){
+        //     data.append('files[]', file, file.name);
+        // }
         fetch('https://soy-api2.herokuapp.com/upload',{
             method: 'POST',
             body: data,
             redirect: 'follow'
         }).catch(error => console.log('error', error));
-        fetch('https://soy-api2.herokuapp.com/predict',{
+        fetch('http://localhost:5000/predict',{
             method: 'POST',
             body: data,
             redirect: 'follow'

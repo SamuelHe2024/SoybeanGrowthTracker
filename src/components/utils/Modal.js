@@ -16,9 +16,6 @@ const style = {
   };
 
 const ModalPopup = ({data, open, onClose}) => {
-    const handleClick = () => {
-        console.log(data['raw_data'][0]['id'])
-    }
     return(
         <Modal
         open = {open}
@@ -29,7 +26,7 @@ const ModalPopup = ({data, open, onClose}) => {
                 <div><strong>Image Name: </strong>{data['raw_data'][1]['image_name']}</div>
                 <div><strong>Solution: </strong>{data['raw_data'][2]['solution']}</div>
                 <div><strong>Day Range: </strong>{data['raw_data'][3]['day_prediction']}</div>
-                <div><strong>Confidence: </strong>data['raw_data'][6]['accuracy']</div>
+                <div><strong>Confidence: </strong>{data['raw_data'][6]['accuracy']}</div>
                 <img src = {data['raw_data'][4]['image_url']} width = "350"></img>
                 {/* <img src = {data['raw_data'][5]['segmented_image_url']} width = "350"></img> */}
             </Box>
