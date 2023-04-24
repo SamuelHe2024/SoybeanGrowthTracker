@@ -77,7 +77,7 @@ const FileUpload = () => {
             data.append('image',uploadedFiles[file].file);
             data.append('uid',uploadedFiles[file].id);
 
-            const response = await fetch('http://localhost:5000/predict',{
+            const response = await fetch('https://soy-api.herokuapp.com/predict',{
                 method: 'POST',
                 body: data,
                 redirect: 'follow'
