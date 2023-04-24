@@ -108,7 +108,7 @@ const FileUpload = () => {
 
         let hasInvalid = false;
         let invalid = [];
-
+        //what
         if(chosenFiles.length > MAX_COUNT){
             setLimitExceeded(true);
             return;
