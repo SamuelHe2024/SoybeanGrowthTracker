@@ -15,11 +15,14 @@ function generateUID() {
     return firstPart + secondPart;
 }
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 const MAX_COUNT = 10;
 function getExtension(filename){
     return filename.split('.').pop();
 }
 const FileUpload = () => {
+    const [predictExist, setPredictExist] = useState(false);
     const [success, setSuccess] = useState(false);
     const [limitExceeded, setLimitExceeded] = useState(false);
     const [invalidFiles, setInvalidFiles] = useState([]);
@@ -54,14 +57,15 @@ const FileUpload = () => {
         }
     }
 
-    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     const uploadFiles = () => {
         const data = new FormData();
         for(let file in uploadedFiles){
-            data.append('files[]',uploadedFiles[file],file.filename)
+            data.append('files[]',uploadedFiles[file]['file'],file.filename);
         }
+        data.append('predictions', JSON.stringify(predictions));
         fetch('https://soy-api2.herokuapp.com/upload',{
+        // fetch('http://localhost:5000/upload',{
             method: 'POST',
             body: data,
             redirect: 'follow'
@@ -71,7 +75,6 @@ const FileUpload = () => {
     const predict = async () => {
         setLoading(true);
         let p = [...predictions];
-        console.log(p)
         for(let file in uploadedFiles){
             const data = new FormData();
             data.append('image',uploadedFiles[file].file);
@@ -81,7 +84,10 @@ const FileUpload = () => {
                 method: 'POST',
                 body: data,
                 redirect: 'follow'
-            })
+            }).catch((error)=> {
+                setPredictExist(false);
+                console.log(error);
+            }).then(setPredictExist(true));
             const json = await response.json();
             p[file] = json;
         }
@@ -108,7 +114,7 @@ const FileUpload = () => {
 
         let hasInvalid = false;
         let invalid = [];
-        //what
+
         if(chosenFiles.length > MAX_COUNT){
             setLimitExceeded(true);
             return;
@@ -185,7 +191,7 @@ const FileUpload = () => {
                 <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {predict}>
                     Predict
                 </Button>
-                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {uploadFiles}>
+                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded || !predictExist} onClick = {uploadFiles}>
                     Upload Predictions
                 </Button>
                 {loading && (<CircularProgress
