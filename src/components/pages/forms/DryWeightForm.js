@@ -1,5 +1,5 @@
 import {React, useState} from 'react'
-import {FormControl,InputLabel, Input, FormHelperText, Select, MenuItem, Button, Grid} from '@mui/material';
+import {FormControl,InputLabel, Input, FormHelperText, Select, MenuItem, Button, Grid, Menu} from '@mui/material';
 
 var solutions = ["Control", 
                  "Plasma Treated Water", 
@@ -17,53 +17,65 @@ var solutions = ["Control",
 
 
 const DryWeightForm = () =>{
-    const [dryWeight, setDryWeight] = useState("")
-    const [solution, setSolution] = useState("")
-
-    const handleDWEvent = event => {
-        setDryWeight(event.target.value)
-    }
-
-    const handleSolutionEvent = event => {
-        setSolution(event.target.value)
-    }
+    const [inputFields, setInputFields] = useState([
+        {solution: '', dryWeight: ''}
+    ])
 
     const handleSubmit = () => {
-        if (!isNaN(dryWeight) && !isNaN(parseFloat(dryWeight))){
-            const data = new FormData();
-            var submitLabel = ["dryWeight", "solution"]
-            var submitObj = [dryWeight, solution]
-            for(let i = 0; i < submitLabel.length; i++){
-                data.append(submitLabel[i], submitObj[i])
+        const data = new FormData();
+        let val = 0;
+        for(let index in inputFields){
+            if(isNaN(parseFloat(inputFields[index].dryWeight))){
             }
-            fetch("http://localhost:5000/db/dry_weight", {
-                    method: "POST", 
-                    body: data
-                }).then(res => console.log(res))
+            data.append(val.toString(), inputFields[index])
+            val += 1;
         }
-        else{
-            console.log("not valid number!")
-        }
-        
+        console.log(data.getAll("0"))
     }
 
+    const addFields = () => {
+        let newfield = {dryWeight: '', solution: ''}
+        setInputFields([...inputFields, newfield])
+    }
+    const handleFormChange = (index, event) => {
+        let data = [...inputFields];
+        data[index][event.target.name] = event.target.value
+        setInputFields(data);
+    }
     return(
         <>
-            <Grid>
-                <FormControl sx={{ m: 1, minWidth: 200 }}>
-                        <InputLabel htmlFor="solution-dd">Select a Solution</InputLabel>
-                        <Select id="solution-dd" aria-describedby="my-helper-text" label = "Solution" onChange={handleSolutionEvent} value = {solution}>
-                            {solutions.map(el => <MenuItem value = {el}>{el}</MenuItem>)}
+            {inputFields.map((input,index) => {
+                return(
+                    <div key={index}>
+                        <Select
+                            sx = {{m: 1, minWidth: 200}}
+                            name='solution'
+                            placeholder='Solution'
+                            value={input.solution}
+                            onChange={event => handleFormChange(index, event)}
+                        >
+                            {solutions.map((el)=>{
+                                return(
+                                    <MenuItem value = {el}>
+                                        {el}
+                                    </MenuItem>
+                                )
+                            })}
                         </Select>
-                </FormControl>
-            </Grid>
+                        <Input
+                            sx = {{m: 1, minWidth: 200}}
+                            name='dryWeight'
+                            placeholder='Enter Dry Weight'
+                            value={input.dryWeight}
+                            onChange={event => handleFormChange(index, event)}
+                        />
+                    </div>
+                )
+            })}
             <Grid>
-                <FormControl sx={{ m: 1, minWidth: 200 }}>
-                    <InputLabel htmlFor="my-input">Enter Dry Weight</InputLabel>
-                    <Input id="my-input" aria-describedby="my-helper-text" onChange = {handleDWEvent} value = {dryWeight}/>
-                </FormControl>
-            </Grid>
-            <Grid>
+                <Grid>
+                    <Button sx={{ m: 1, minWidth: 200 }} variant = "contained" onClick = {addFields}>Add more data</Button>
+                </Grid>
                 <Button sx={{ m: 1, minWidth: 200 }} variant = "contained" onClick = {handleSubmit}>Submit</Button>
             </Grid>
         </>
