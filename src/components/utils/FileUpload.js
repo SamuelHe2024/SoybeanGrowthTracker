@@ -6,6 +6,15 @@ import Paper from '@mui/material/Paper';
 import { maxHeight, maxWidth } from '@mui/system';
 import { Button, Grid, CircularProgress, Box, Alert} from '@mui/material'
 
+
+function generateUID() { 
+    var firstPart = (Math.random() * 46656) | 0;
+    var secondPart = (Math.random() * 46656) | 0;
+    firstPart = ("000" + firstPart.toString(36)).slice(-3);
+    secondPart = ("000" + secondPart.toString(36)).slice(-3);
+    return firstPart + secondPart;
+}
+
 const MAX_COUNT = 10;
 function getExtension(filename){
     return filename.split('.').pop();
@@ -27,7 +36,8 @@ const FileUpload = () => {
         const uploaded = [];
         let limitExceeded = false;
         files.some((file) => {
-            if (uploaded.findIndex((f)=>f.name === file.name) === -1){
+            console.log(uploaded)
+            if (uploaded.findIndex((f)=>f['file'].name === file['file'].name) === -1){
                 uploaded.push(file);
                 if(uploaded.length === MAX_COUNT) setFileLimit(true);
                 if(uploaded.length > MAX_COUNT){
@@ -40,48 +50,61 @@ const FileUpload = () => {
         })
         if (!limitExceeded && !hasInvalidFiles){ 
             setUploadedFiles(uploaded)
-            console.log(uploadedFiles)
             setHasFile(true)
         }
     }
 
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
     const uploadFiles = () => {
         const data = new FormData();
-        setLoading(true);
-        for(const file of uploadedFiles){
-            data.append('files[]', file, file.name);
+        for(let file in uploadedFiles){
+            data.append('files[]',uploadedFiles[file],file.filename)
         }
         fetch('https://soy-api2.herokuapp.com/upload',{
             method: 'POST',
             body: data,
             redirect: 'follow'
         }).catch(error => console.log('error', error));
-        fetch('https://soy-api2.herokuapp.com/predict',{
-            method: 'POST',
-            body: data,
-            redirect: 'follow'
-        }).then(response=>response.json())
-        .then(response=>{setPredictions(response)})
-        .then(response=>{console.log(response);
-                         setLoading(false)})
-        .then(response=>{setSuccess(true)})
-        .catch(error => {console.log('error', error)
-                         setTimeout(() => setRequestFailed(true), 1000) 
-                        });
-        setTimeout(() => setSuccess(false), 10000);
+    }
+
+    const predict = async () => {
+        setLoading(true);
+        let p = [...predictions];
+        console.log(p)
+        for(let file in uploadedFiles){
+            const data = new FormData();
+            data.append('image',uploadedFiles[file].file);
+            data.append('uid',uploadedFiles[file].id);
+
+            const response = await fetch('http://localhost:5000/predict',{
+                method: 'POST',
+                body: data,
+                redirect: 'follow'
+            })
+            const json = await response.json();
+            p[file] = json;
+        }
+        setPredictions(p)
+        setSuccess(true);
+        setLoading(false);
+        await delay(5000);
+        setSuccess(false);
     }
 
     const handleFileEvent = (e) =>{
+        setSuccess(false);
         setLimitExceeded(false);
         setInvalidFiles([])
         setHasInvalidFiles(false);
         setPredictions([]);
         setHasFile(false);
         setPictures([]);
-
+        
         const chosenFiles = Array.prototype.slice.call(e.target.files);
         const pictureArray = [];
         const predictionArray = [];
+        const fileArray = [];
 
         let hasInvalid = false;
         let invalid = [];
@@ -91,9 +114,11 @@ const FileUpload = () => {
             return;
         }
         for(let i = 0; i < chosenFiles.length; i++){
+                let uid = generateUID()
                 if((getExtension(chosenFiles[i].name) === "png") || (getExtension(chosenFiles[i].name) === "jpg")){
-                    pictureArray.push({"name":chosenFiles[i].name,"img":URL.createObjectURL(chosenFiles[i])})
-                    predictionArray.push({"id": i,"prediction" : "", "accuracy" : "", "filename" : chosenFiles[i].name})
+                    pictureArray.push({"id": uid,"name":chosenFiles[i].name,"img":URL.createObjectURL(chosenFiles[i])})
+                    predictionArray.push({"id": uid,"prediction" : "", "accuracy" : "", "filename" : chosenFiles[i].name})
+                    fileArray.push({"id":uid, "file":chosenFiles[i]})
                 }
                 else{
                     invalid.push(chosenFiles[i].name);
@@ -105,7 +130,7 @@ const FileUpload = () => {
         if(!hasInvalid){
                 setPredictions(predictionArray);
                 setPictures(pictureArray);
-                handleUploadFiles(chosenFiles);
+                handleUploadFiles(fileArray);
                 return;
         }
         setInvalidFiles(invalid);
@@ -122,7 +147,7 @@ const FileUpload = () => {
     const picturesWithPrediction = pictures.map(picture =>{
         return {
             ...picture,
-            "prediction": predictions.find(prediction => prediction.filename === picture.name)
+            "prediction": predictions.find(prediction => prediction.id === picture.id)
         }
     })
 
@@ -139,7 +164,6 @@ const FileUpload = () => {
                         <strong>Day Range: </strong> {data.prediction.prediction}<br/>
                         <strong>Confidence: </strong> {Math.round(data.prediction.accuracy*1000,3)/10}%
                     </div>
-                
             </Item>
         </Grid>
     )
@@ -158,8 +182,11 @@ const FileUpload = () => {
                     disabled={fileLimit}
                 />
                 </Button>
-                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {uploadFiles}>
+                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {predict}>
                     Predict
+                </Button>
+                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {uploadFiles}>
+                    Upload Predictions
                 </Button>
                 {loading && (<CircularProgress
                     size = {24}
