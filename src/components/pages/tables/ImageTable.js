@@ -1,6 +1,6 @@
 //REACT COMPONENT THAT INCLUDES IMAGES AND THEIR PREDICTED DAY OF GROWTH
 //REACT COMPONENT FOR DRY WEIGHT DATA TABLE
-import {React, useState, useMemo, useCallback, useEffect} from 'react'
+import {React, useState, useCallback, useEffect} from 'react'
 
 import { AgGridReact } from 'ag-grid-react'
 
@@ -15,13 +15,13 @@ const ImageTable = () => {
         "raw_data":[{"id":null},
                     {"image_name":null},
                     {"day_prediction":null},
-                    {"solution":null},
+                    {"image_url":null},
+                    {"segmented_image_url":null},
                     {"accuracy":null}]
     })
-    const [columnDefs, setColumnDefs] = useState([
+    const [columnDefs] = useState([
         {field: 'image_name', maxWidth: 150},
         {field: 'day_prediction'},
-        {field: 'solution'},
         {field: 'accuracy'}
     ])
 

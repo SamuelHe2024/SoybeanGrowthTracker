@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useRef } from 'react';
 import Description from '../Description';
 import Typography from '@mui/material/Typography';
@@ -10,15 +10,20 @@ const HomePage = () => {
     return(
             <>
                 <div className="App">
-                            <div className = "home-text">
-                                <Typography variant="h2" className = "home-text-2">
-                                    DL Hydroponics
-                                </Typography>
-                                <Button className="gettingStarted" variant='contained' href="/insert_data">Get Started</Button>
-                            </div>
-                            <div className = "description">
-                                <Description/>
-                            </div>
+                    <Grid height = "100vh" container alignItems={"center"} className = "home-text">
+                        <Grid container justifyContent={"flex"}>
+                            <Typography container variant="h2">
+                                DL Hydroponics
+                            </Typography>
+                            <Grid container justifyContent={"flex"}>
+                                <Button variant='contained' href="/insert_data">Get Started</Button>
+                            </Grid>
+                        </Grid>
+                        
+                    </Grid>
+                    <div className = "description">
+                            <Description/>
+                    </div>
                 </div>
             </>
         );

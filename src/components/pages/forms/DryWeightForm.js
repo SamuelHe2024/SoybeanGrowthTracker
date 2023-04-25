@@ -1,5 +1,6 @@
 import {React, useState} from 'react'
-import {FormControl,InputLabel, Input, FormHelperText, Select, MenuItem, Button, Grid, Menu} from '@mui/material';
+import {Input, Select, MenuItem, Button, Grid, Alert} from '@mui/material';
+import { wait } from '@testing-library/user-event/dist/utils';
 
 var solutions = ["Control", 
                  "Plasma Treated Water", 
@@ -15,31 +16,40 @@ var solutions = ["Control",
                 ]
 
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const DryWeightForm = () =>{
+    const [cannotDelete, setCannotDelete] = useState(false);
     const [inputFields, setInputFields] = useState([
         {solution: '', dryWeight: ''}
     ])
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const data = new FormData();
-        let val = 0;
         for(let index in inputFields){
             if(isNaN(parseFloat(inputFields[index].dryWeight))){
+                console.log('NOT A VALID ENTRY')
+                return;
             }
-            data.append(val.toString(), inputFields[index])
-            val += 1;
         }
-        console.log(data.getAll("0"))
+        data.append('inputFields', JSON.stringify(inputFields));
+        let response =  await fetch('http://localhost:5000/db/dry_weight',{
+            method: 'POST',
+            body: data,
+            redirect: 'follow'
+        })
+        .catch(error => console.log('error', error))
+        const json = await response.json();
+        console.log(json);
     }
 
     const addFields = () => {
-        let newfield = {dryWeight: '', solution: ''}
-        setInputFields([...inputFields, newfield])
+        setCannotDelete(false);
+        setInputFields([...inputFields, {dryWeight: '', solution: ''}])
     }
     const handleFormChange = (index, event) => {
         let data = [...inputFields];
-        data[index][event.target.name] = event.target.value
+        data[index][event.target.name] = event.target.value;
         setInputFields(data);
     }
     return(
@@ -48,7 +58,7 @@ const DryWeightForm = () =>{
                 return(
                     <div key={index}>
                         <Select
-                            sx = {{m: 1, minWidth: 200}}
+                            sx = {{m: 1, width: 200}}
                             name='solution'
                             placeholder='Solution'
                             value={input.solution}
@@ -63,12 +73,22 @@ const DryWeightForm = () =>{
                             })}
                         </Select>
                         <Input
-                            sx = {{m: 1, minWidth: 200}}
+                            sx = {{m: 1, width: 200}}
                             name='dryWeight'
                             placeholder='Enter Dry Weight'
                             value={input.dryWeight}
                             onChange={event => handleFormChange(index, event)}
+                            type = 'number'
                         />
+                        <Button onClick = {(index) => {
+                            let newFormVal = [...inputFields];
+                            if(newFormVal.length > 1){
+                                newFormVal.splice(index,1);
+                                setInputFields(newFormVal);
+                            } else{
+                                setCannotDelete(true);
+                            }
+                        }}>Remove</Button>
                     </div>
                 )
             })}
@@ -78,6 +98,7 @@ const DryWeightForm = () =>{
                 </Grid>
                 <Button sx={{ m: 1, minWidth: 200 }} variant = "contained" onClick = {handleSubmit}>Submit</Button>
             </Grid>
+            <Alert severity = "error" hidden = {!cannotDelete} >Cannot delete anymore cells!</Alert>
         </>
     )
 }
