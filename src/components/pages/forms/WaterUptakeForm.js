@@ -35,7 +35,7 @@ const WaterUptakeForm =()=>{
         }
         console.log(modifiedInput);
         data.append("inputFields", JSON.stringify(modifiedInput));
-        let response = await fetch("http://localhost:5000/db/water_uptake", {
+        let response = await fetch("https://soy-api2.herokuapp.com/db/water_uptake", {
                 method: "POST", 
                 body: data
         })

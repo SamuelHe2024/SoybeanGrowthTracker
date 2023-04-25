@@ -15,9 +15,6 @@ var solutions = ["Control",
                  "Magnesium 250ppm",
                 ]
 
-
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
 const DryWeightForm = () =>{
     const [cannotDelete, setCannotDelete] = useState(false);
     const [inputFields, setInputFields] = useState([
@@ -33,7 +30,7 @@ const DryWeightForm = () =>{
             }
         }
         data.append('inputFields', JSON.stringify(inputFields));
-        let response =  await fetch('http://localhost:5000/db/dry_weight',{
+        let response =  await fetch('https://soy-api2.herokuapp.com/db/dry_weight',{
             method: 'POST',
             body: data,
             redirect: 'follow'

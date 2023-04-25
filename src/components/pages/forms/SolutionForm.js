@@ -96,7 +96,7 @@ const SolutionForm = () =>{
     const handleSubmit = async () => {
         const data = new FormData();
         data.append('inputFields', JSON.stringify(inputFields));
-        let response = await fetch('http://localhost:5000/db/solution_data',{
+        let response = await fetch('https://soy-api2.herokuapp.com/db/solution_data',{
             method: 'POST',
             body: data,
             redirect: 'follow'
