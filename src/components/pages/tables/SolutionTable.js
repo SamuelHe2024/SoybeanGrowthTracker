@@ -105,7 +105,7 @@ const SolutionTable = () =>{
                     component = "img" 
                     src = {mgImg}
                     sx={{
-                        width: '100vw',
+                        width: '90vw',
                     }}
                     hidden = {mgHidden}
                 />
@@ -113,7 +113,7 @@ const SolutionTable = () =>{
                     component = "img" 
                     src = {nImg}
                     sx={{
-                        width: '100vw',
+                        width: '90vw',
                     }}
                     hidden = {nHidden}
                 />
@@ -121,7 +121,7 @@ const SolutionTable = () =>{
                     component = "img" 
                     src = {kImg}
                     sx={{
-                        width: '100vw',
+                        width: '90vw',
                     }}
                     hidden = {kHidden}
                 />
