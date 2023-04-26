@@ -1,6 +1,6 @@
 import {React, useState} from 'react'
-import {Input, Select, MenuItem, Button, Grid, Alert} from '@mui/material';
-import { wait } from '@testing-library/user-event/dist/utils';
+import { green } from '@mui/material/colors';
+import {Input, Select, MenuItem, Button, Grid, Alert,CircularProgress} from '@mui/material';
 
 var solutions = ["Control", 
                  "Plasma Treated Water", 
@@ -10,44 +10,66 @@ var solutions = ["Control",
                  "Magnesium 30ppm",
                  "Magnesium 50ppm",
                  "Magnesium 70ppm",
-                 "Magnesium 100ppm",
-                 "Magnesium 175ppm",
-                 "Magnesium 250ppm",
+                 "Nitrogen 100ppm",
+                 "Nitrogen 175ppm",
+                 "Nitrogen 250ppm",
                 ]
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const DryWeightForm = () =>{
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [dayError, setDayError] = useState(false);
+    const [hasNull, setHasNull] = useState(true);
     const [cannotDelete, setCannotDelete] = useState(false);
+    const [requestFailed, setRequestFailed] = useState(false);
     const [inputFields, setInputFields] = useState([
-        {solution: '', dryWeight: ''}
+        {solution: '', dryWeight: '', rawWeight: '', percentBiomass: 0}
     ])
 
     const handleSubmit = async () => {
         const data = new FormData();
         for(let index in inputFields){
+            let percentBiomass = (parseFloat(inputFields[index].rawWeight) - parseFloat(inputFields[index].dryWeight))/parseFloat(inputFields[index].rawWeight)*100
             if(isNaN(parseFloat(inputFields[index].dryWeight))){
                 console.log('NOT A VALID ENTRY')
                 return;
             }
+            inputFields[index].percentBiomass = percentBiomass;
         }
+        console.log(inputFields)
         data.append('inputFields', JSON.stringify(inputFields));
-        let response =  await fetch('https://soy-api2.herokuapp.com/db/dry_weight',{
+        let response =  await 
+        fetch('https://soy-api2.herokuapp.com/db/dry_weight',{
+        // fetch('http://localhost:5000/db/dry_weight',{ 
             method: 'POST',
             body: data,
             redirect: 'follow'
         })
-        .catch(error => console.log('error', error))
+        .catch(error => {setRequestFailed(true);})
         const json = await response.json();
-        console.log(json);
+        setSuccess(true);
+        setLoading(false);
+        await delay(5000);
+        setSuccess(false);
     }
 
     const addFields = () => {
         setCannotDelete(false);
-        setInputFields([...inputFields, {dryWeight: '', solution: ''}])
+        setInputFields([...inputFields, {dryWeight: '', solution: '', rawWeight: ''}])
     }
     const handleFormChange = (index, event) => {
+        setRequestFailed(false);
         let data = [...inputFields];
         data[index][event.target.name] = event.target.value;
         setInputFields(data);
+        for(let i in inputFields){
+            if(inputFields[i]['solution'] == "" || inputFields[i]['rawWeight'] == "" || inputFields[i]['dryWeight'] == "" ){
+                setHasNull(true);
+                return;
+            }
+        }
+        setHasNull(false);
     }
     return(
         <>
@@ -77,7 +99,15 @@ const DryWeightForm = () =>{
                             onChange={event => handleFormChange(index, event)}
                             type = 'number'
                         />
-                        <Button onClick = {(index) => {
+                        <Input
+                            sx = {{m: 1, width: 200}}
+                            name='rawWeight'
+                            placeholder='Enter Raw Weight'
+                            value={input.rawWeight}
+                            onChange={event => handleFormChange(index, event)}
+                            type = 'number'
+                        />
+                        <Button variant = "contained" onClick = {() => {
                             let newFormVal = [...inputFields];
                             if(newFormVal.length > 1){
                                 newFormVal.splice(index,1);
@@ -91,11 +121,25 @@ const DryWeightForm = () =>{
             })}
             <Grid>
                 <Grid>
-                    <Button sx={{ m: 1, minWidth: 200 }} variant = "contained" onClick = {addFields}>Add more data</Button>
+                    <Button sx={{ m: 1, minWidth: 200 }} variant = "contained" onClick = {addFields}>Add data</Button>
                 </Grid>
-                <Button sx={{ m: 1, minWidth: 200 }} variant = "contained" onClick = {handleSubmit}>Submit</Button>
+                <Grid>
+                    <Button color = "success" variant = "contained" sx={{ m: 1, minWidth: 200 }} onClick = {handleSubmit} disabled = {hasNull || dayError || loading}>Submit</Button>
+                    {loading && (<CircularProgress
+                    size = {24}
+                    sx={{
+                        color: green[500],
+                        position: 'absolute',
+                        top: '50%',
+                        marginTop: '-12px',
+                        marginLeft: '-60px',
+                      }}
+                />)}
+                </Grid>            
             </Grid>
             <Alert severity = "error" hidden = {!cannotDelete} >Cannot delete anymore cells!</Alert>
+            <Alert severity = "success" hidden = {!success}>Successfully uploaded!</Alert>
+            <Alert severity = "error" hidden = {!requestFailed} >[INTERNAL ERROR] Request failed to connect to server</Alert>
         </>
     )
 }

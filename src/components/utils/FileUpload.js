@@ -39,7 +39,6 @@ const FileUpload = () => {
         const uploaded = [];
         let limitExceeded = false;
         files.some((file) => {
-            console.log(uploaded)
             if (uploaded.findIndex((f)=>f['file'].name === file['file'].name) === -1){
                 uploaded.push(file);
                 if(uploaded.length === MAX_COUNT) setFileLimit(true);
@@ -69,7 +68,7 @@ const FileUpload = () => {
             method: 'POST',
             body: data,
             redirect: 'follow'
-        }).catch(error => console.log('error', error));
+        }).catch(error => setRequestFailed(true));
     }
 
     const predict = async () => {
@@ -86,6 +85,7 @@ const FileUpload = () => {
                 redirect: 'follow'
             }).catch((error)=> {
                 setPredictExist(false);
+                setRequestFailed(true);
                 console.log(error);
             }).then(setPredictExist(true));
             const json = await response.json();
@@ -99,6 +99,7 @@ const FileUpload = () => {
     }
 
     const handleFileEvent = (e) =>{
+        setRequestFailed(false);
         setSuccess(false);
         setLimitExceeded(false);
         setInvalidFiles([])
@@ -191,9 +192,6 @@ const FileUpload = () => {
                 <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded} onClick = {predict}>
                     Predict
                 </Button>
-                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded || !predictExist} onClick = {uploadFiles}>
-                    Upload Predictions
-                </Button>
                 {loading && (<CircularProgress
                     size = {24}
                     sx={{
@@ -204,6 +202,9 @@ const FileUpload = () => {
                         marginLeft: '-60px',
                       }}
                 />)}
+                <Button variant = "contained" color = "success" disabled = {!hasFile || loading || hasInvalidFiles || limitExceeded || !predictExist} onClick = {uploadFiles}>
+                    Upload Predictions
+                </Button>
                 {invalidFiles.map(eq => (<Alert key = {eq} severity = "error" hidden = {!hasInvalidFiles}>Invalid File Type for {eq}: Must use .jpg or .png filetype</Alert>))}
                 <Alert severity = "error" hidden = {!limitExceeded} >You cannot upload more than {MAX_COUNT} files!</Alert>
                 <Alert severity = "error" hidden = {!requestFailed} >[INTERNAL ERROR] Request failed to connect to server</Alert>
