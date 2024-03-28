@@ -1,3 +1,6 @@
+# This is the frontend application for a Capstone Project on Hydroponically grown soybeans
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
